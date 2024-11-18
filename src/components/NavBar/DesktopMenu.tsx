@@ -107,11 +107,10 @@ export const DesktopMenu = ({
       direction="row" 
       spacing={2}
       sx={{ 
-        position: 'absolute',
-        left: '50%',
-        transform: 'translateX(-50%)',
         display: 'flex',
         alignItems: 'center',
+        height: '100%',
+        ml: 2,
       }}
     >
       {NAV_ITEMS.map((item, index) => (
@@ -140,6 +139,11 @@ export const DesktopMenu = ({
             }}
             MenuListProps={{
               'aria-labelledby': `nav-button-${index}`,
+            }}
+            sx={{
+              '& .MuiPaper-root': {
+                mt: 1,
+              }
             }}
           >
             {item.links.map((link) => (

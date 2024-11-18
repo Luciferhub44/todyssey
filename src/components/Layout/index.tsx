@@ -2,9 +2,10 @@ import React from 'react';
 import { Box, styled } from '@mui/material';
 import { Header } from '../NavBar/Header';
 import { Footer } from '../Footer';
+import AppRoutes from '../../routes';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const StyledLayout = styled(Box)({
@@ -25,12 +26,12 @@ const Main = styled(Box)({
   zIndex: 1
 });
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = () => {
   return (
     <StyledLayout>
       <Header />
-      <Main component="main">
-        {children}
+      <Main>
+        <AppRoutes />
       </Main>
       <Footer />
     </StyledLayout>

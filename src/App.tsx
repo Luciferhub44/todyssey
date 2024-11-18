@@ -9,7 +9,7 @@ const App = () => {
     <ErrorBoundary>
       <BrowserRouter>
         <Suspense fallback={<LoadingSpinner />}>
-          <Layout>\</Layout>
+          <Layout />
         </Suspense>
       </BrowserRouter>
     </ErrorBoundary>

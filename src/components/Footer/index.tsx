@@ -66,7 +66,8 @@ const footerLinks = {
     { name: '4K Tribe', path: '/4ktribe' },
     { name: 'Wallpapers', path: '/wallpaper' },
     { name: 'ENS', path: '/ens' },
-    { name: 'Tribal Beats', path: '/beats' }
+    { name: 'Tribal Beats', path: '/beats' },
+    { name: 'Tribe 19 Checker', path: '/checker' }
   ],
   Marketplace: [
     { name: 'Marketplace', path: '/marketplace' },
