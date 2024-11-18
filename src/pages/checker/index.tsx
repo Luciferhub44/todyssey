@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { isAddress } from 'ethers';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import CheckerPopup from '../../components/CheckerPopup';
 
 // Styled Components
@@ -103,16 +103,36 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }
 }));
 
+interface NFTTrait {
+  trait_type: string;
+  value: string;
+}
+
+interface NFTData {
+  identifier: string;
+  traits: NFTTrait[];
+}
+
 interface CheckerResult {
   isEligible: boolean;
   message: string;
-  data?: {
+  data: {
     assetsValue: string;
     favoriteSpecies: string;
     totalAssets: number;
     progress: number;
+    missingSpecies?: string[];
+    nanaPoints: number;
   };
 }
+
+const OPENSEA_API_KEY = '61d4651899ad47a5b1dab18c10ef07e1';
+const TRIBE_SPECIES = [
+  '24 Carat', 'Acid', 'Ash', 'Chameleon', 'Clay',
+  'Dark Simianoid', 'Equinox', 'Frost', 'Helios', 'Oak',
+  'Ochre', 'Onyx', 'Panthera', 'Poison', 'Sapphire',
+  'Shaman', 'Simianoid', 'Undead', 'Wild Quartz'
+];
 
 const CheckerPage = () => {
   const [address, setAddress] = useState('');
@@ -154,22 +174,85 @@ const CheckerPage = () => {
     setResult(null);
   };
 
-  // Mock check function - replace with actual blockchain interaction
+  const getTribeTraits = async (nft: { identifier: string }): Promise<NFTData> => {
+    const response = await fetch(
+      `https://api.opensea.io/api/v2/chain/ethereum/contract/0x77f649385ca963859693c3d3299d36dfc7324eb9/nfts/${nft.identifier}`,
+      {
+        headers: {
+          'x-api-key': OPENSEA_API_KEY,
+        },
+      }
+    );
+    const data = await response.json();
+    return data.nft;
+  };
+
+  const getTribeStats = async () => {
+    const response = await fetch(
+      `https://api.opensea.io/api/v2/collections/tribe-odyssey/stats`,
+      {
+        headers: {
+          'x-api-key': OPENSEA_API_KEY,
+        },
+      }
+    );
+    return await response.json();
+  };
+
   const checkEligibility = async (address: string): Promise<CheckerResult> => {
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const response = await fetch(
+      `https://api.opensea.io/api/v2/chain/ethereum/account/${address}/nfts?collection=tribe-odyssey&limit=200`,
+      {
+        headers: {
+          'x-api-key': OPENSEA_API_KEY,
+        },
+      }
+    );
+
+    const data = await response.json();
+    const traitsToCheck = new Set(TRIBE_SPECIES);
+    const speciesCount = new Map<string, number>();
+
+    // Process first 120 NFTs
+    await Promise.all(data.nfts.slice(0, 120).map(async (nft: any) => {
+      const tribeTraits = await getTribeTraits(nft);
+      const species = tribeTraits.traits
+        .find(trait => trait.trait_type === 'Species')
+        ?.value;
+
+      if (species) {
+        if (traitsToCheck.has(species)) {
+          traitsToCheck.delete(species);
+        }
+        speciesCount.set(species, (speciesCount.get(species) || 0) + 1);
+      }
+    }));
+
+    // Get collection stats
+    const stats = await getTribeStats();
+    const totalAssets = data.nfts.length;
+    const assetsValue = (Number(stats.total.floor_price) * totalAssets).toFixed(4);
     
-    const isEligible = Math.random() > 0.5;
+    // Find favorite species
+    const favoriteSpecies = Array.from(speciesCount.entries())
+      .reduce((a, b) => (a[1] > b[1] ? a : b))[0];
+
+    const isEligible = traitsToCheck.size === 0;
+    const progress = TRIBE_SPECIES.length - traitsToCheck.size;
+
     return {
       isEligible,
-      message: isEligible 
-        ? "Congratulations! You are eligible for Tribe 19." 
-        : "Sorry, you are not eligible for Tribe 19.",
-      data: isEligible ? {
-        assetsValue: "1.44 ETH",
-        favoriteSpecies: "ASH",
-        totalAssets: 100,
-        progress: 14
-      } : undefined
+      message: isEligible
+        ? "Congratulations! You are in the exclusive TRIBΞ19 club!"
+        : `To enter the exclusive TRIBΞ19 club, collect the missing species below`,
+      data: {
+        assetsValue: `${assetsValue} ETH`,
+        favoriteSpecies,
+        totalAssets,
+        progress,
+        missingSpecies: Array.from(traitsToCheck),
+        nanaPoints: totalAssets * 10
+      }
     };
   };
 
@@ -181,11 +264,10 @@ const CheckerPage = () => {
 
       const result = await checkEligibility(address);
       setResult(result);
-      if (result.isEligible && result.data) {
-        setShowPopup(true);
-      }
+      setTimeout(() => setShowPopup(true), 800);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while checking eligibility');
+      console.error('Error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -244,30 +326,34 @@ const CheckerPage = () => {
 
           {/* Results Section */}
           {result && (
-            <Fade in={true} timeout={800}>
-              <Alert 
-                severity={result.isEligible ? "success" : "info"}
-                sx={{
-                  width: '100%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
-                  border: '1px solid',
-                  borderColor: result.isEligible 
-                    ? 'rgba(46, 125, 50, 0.5)'
-                    : 'rgba(2, 136, 209, 0.5)',
-                }}
-              >
-                {result.message}
-              </Alert>
-            </Fade>
-          )}
+            <>
+              <Fade in={true} timeout={800}>
+                <Alert 
+                  severity={result.isEligible ? "success" : "info"}
+                  sx={{
+                    width: '100%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    border: '1px solid',
+                    borderColor: result.isEligible 
+                      ? 'rgba(46, 125, 50, 0.5)'
+                      : 'rgba(2, 136, 209, 0.5)',
+                  }}
+                >
+                  {result.message}
+                </Alert>
+              </Fade>
 
-          {result?.isEligible && result.data && (
-            <CheckerPopup
-              open={showPopup}
-              onClose={() => setShowPopup(false)}
-              data={result.data}
-            />
+              <CheckerPopup
+                open={showPopup}
+                onClose={() => setShowPopup(false)}
+                data={{
+                  ...result.data,
+                  isEligible: result.isEligible,
+                  message: result.message
+                }}
+              />
+            </>
           )}
         </Box>
       </ContentWrapper>
