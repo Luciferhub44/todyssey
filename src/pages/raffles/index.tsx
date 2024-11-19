@@ -1,5 +1,10 @@
-import { useEffect } from "react";
-import { Box, Container, Typography, styled } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Container, Typography, styled, Grid, Card } from "@mui/material";
+import { usePublicClient } from 'wagmi';
+import { readContract } from 'wagmi/actions';
+import stakingABI from '../../config/abi/staking.json';
+import contracts from '../../config/constants/contracts';
+import { DefaultChainID } from '../../config/constants';
 
 // Styled Components
 const StyledContainer = styled(Container)({
@@ -54,10 +59,70 @@ const Description = styled(Typography)({
   }
 });
 
+interface RaffleInfo {
+  id: number;
+  lockDuration: number;
+  raffleAt: number;
+  active: boolean;
+}
+
+interface PoolInfo {
+  lockDuration: bigint;
+  raffleAt: bigint;
+  totalStaked: bigint;
+  active: boolean;
+  stopped: boolean;
+  winners: bigint[];
+}
+
 export default function RafflesPage(): JSX.Element {
+  const [raffles, setRaffles] = useState<RaffleInfo[]>([]);
+  const publicClient = usePublicClient();
+  
+  const stakingAddress = contracts.staking[DefaultChainID as keyof typeof contracts.staking];
+  
   useEffect(() => {
     document.title = "Raffles";
-  }, []);
+    if (publicClient && stakingAddress) {
+      fetchRaffles();
+    }
+  }, [publicClient, stakingAddress]);
+
+  const fetchRaffles = async () => {
+    try {
+      if (!publicClient || !stakingAddress) return;
+      
+      const currentPoolId = await readContract(publicClient, {
+        address: stakingAddress as `0x${string}`,
+        abi: stakingABI,
+        functionName: 'currentPoolId',
+      }) as bigint;
+
+      const rafflesList: RaffleInfo[] = [];
+      
+      for (let i = 0; i <= Number(currentPoolId); i++) {
+        const poolInfo = await readContract(publicClient, {
+          address: stakingAddress as `0x${string}`,
+          abi: stakingABI,
+          functionName: 'poolInfo',
+          args: [BigInt(i)],
+        }) as PoolInfo;
+
+        if (poolInfo.active) {
+          rafflesList.push({
+            id: i,
+            lockDuration: Number(poolInfo.lockDuration),
+            raffleAt: Number(poolInfo.raffleAt),
+            active: poolInfo.active
+          });
+        }
+      }
+      
+      setRaffles(rafflesList);
+    } catch (error) {
+      console.error("Error fetching raffles:", error);
+    }
+  };
 
   return (
     <StyledContainer maxWidth={false}>
@@ -85,7 +150,29 @@ export default function RafflesPage(): JSX.Element {
             </Description>
           </Box>
 
-          {/* Add raffle cards or other content here */}
+          <Grid container spacing={3}>
+            {raffles.map((raffle) => (
+              <Grid item xs={12} sm={6} md={4} key={raffle.id}>
+                <Card
+                  sx={{
+                    p: 3,
+                    bgcolor: 'rgba(255,255,255,0.05)',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography variant="h6" color="white">
+                    Raffle #{raffle.id}
+                  </Typography>
+                  <Typography color="rgba(255,255,255,0.7)">
+                    Lock Duration: {raffle.lockDuration} days
+                  </Typography>
+                  <Typography color="rgba(255,255,255,0.7)">
+                    Raffle Date: {new Date(raffle.raffleAt * 1000).toLocaleDateString()}
+                  </Typography>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       </ContentWrapper>
     </StyledContainer>

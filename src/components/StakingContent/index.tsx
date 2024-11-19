@@ -1,10 +1,22 @@
 import { Box, Button, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { injected } from 'wagmi/connectors';
 import React from "react";
 
 const StakingContent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  const handleConnect = async () => {
+    try {
+      await connect({ connector: injected() });
+    } catch (err) {
+      console.error("Failed to connect wallet:", err);
+    }
+  };
 
   return (
     <Box
@@ -64,11 +76,14 @@ const StakingContent = () => {
                 px: { xs: 1, sm: 2 },
               }}
             >
-              To stake you need to connect your wallet.
+              {isConnected 
+                ? `Connected: ${address?.slice(0, 6)}...${address?.slice(-4)}`
+                : "To stake you need to connect your wallet."}
             </Typography>
 
             <Button
               variant="contained"
+              onClick={isConnected ? () => disconnect() : handleConnect}
               sx={{
                 bgcolor: "#ff0008",
                 borderRadius: "60px",
@@ -87,7 +102,7 @@ const StakingContent = () => {
                 whiteSpace: 'nowrap',
               }}
             >
-              Connect Wallet
+              {isConnected ? 'Disconnect' : 'Connect Wallet'}
             </Button>
           </Box>
         </Box>

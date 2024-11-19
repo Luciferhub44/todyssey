@@ -1,19 +1,36 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider } from 'wagmi';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { wagmiConfig } from './config/wagmi';
+import { RainbowKitProvider, getDefaultWallets } from '@rainbow-me/rainbowkit';
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { mainnet, goerli } from 'wagmi/chains';
 import { AuthProvider } from './contexts/AuthContext';
 import App from './App';
 import './index.scss';
 import '@rainbow-me/rainbowkit/styles.css';
 
-const queryClient = new QueryClient();
+// Create wagmi config
+const config = createConfig({
+  chains: [mainnet, goerli],
+  transports: {
+    [mainnet.id]: http(),
+    [goerli.id]: http(),
+  },
+});
+
+// Create query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <WagmiProvider config={wagmiConfig}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <AuthProvider>

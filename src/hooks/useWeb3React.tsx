@@ -4,11 +4,11 @@ import {
   useAccountModal,
   useChainModal,
 } from "@rainbow-me/rainbowkit";
-import { SUPPORTED_CHAIN_IDS } from '../config/chains';
+import { chains } from '../config/constants';
 
 export function useWeb3React() {
   const chainId = useChainId();
-  const isSupported = SUPPORTED_CHAIN_IDS.includes(chainId);
+  const isSupported = chains.includes(chainId);
   const { address, connector, isConnected, isConnecting } = useAccount();
   const { data: walletClient } = useWalletClient();
 
