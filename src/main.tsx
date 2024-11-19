@@ -6,6 +6,8 @@ import { WagmiProvider, createConfig, http } from 'wagmi';
 import { mainnet, goerli } from 'wagmi/chains';
 import { AuthProvider } from './contexts/AuthContext';
 import App from './App';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.scss';
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -35,6 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <RainbowKitProvider>
           <AuthProvider>
             <App />
+            <ToastContainer position="bottom-right" />
           </AuthProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
