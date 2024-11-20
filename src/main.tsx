@@ -12,7 +12,7 @@ import "./index.scss";
 import "@rainbow-me/rainbowkit/styles.css";
 
 // Create wagmi config
-const config = createConfig({
+export const wagmiConfig = createConfig({
   chains: [mainnet, goerli],
   transports: {
     [mainnet.id]: http(),
@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <AuthProvider>

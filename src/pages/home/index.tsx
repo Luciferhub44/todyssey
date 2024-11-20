@@ -31,6 +31,7 @@ interface Post {
   content: string;
 }
 
+
 // Styled Components
 // const StyledCard = styled(Card)({
 //   display: "flex",

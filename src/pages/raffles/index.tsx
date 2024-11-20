@@ -1,30 +1,31 @@
 import { useEffect, useState } from "react";
 import { Box, Container, Typography, styled, Grid, Card } from "@mui/material";
-import { usePublicClient } from 'wagmi';
-import { readContract } from 'wagmi/actions';
-import stakingABI from '../../config/abi/staking.json';
-import contracts from '../../config/constants/contracts';
-import { DefaultChainID } from '../../config/constants';
-
+import { usePublicClient } from "wagmi";
+import { readContract } from "wagmi/actions";
+import stakingABI from "../../config/abi/staking.json";
+import contracts from "../../config/constants/contracts";
+import   wagmiConfig  from "../home/index";
+import { DefaultChainID } from "../../config/constants";
 // Styled Components
 const StyledContainer = styled(Container)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  padding: '64px 16px',
-  minHeight: '100vh',
-  background: 'linear-gradient(180deg, #14121b 0%, #000000 100%)',
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  padding: "64px 16px",
+  minHeight: "100vh",
+  background: "linear-gradient(180deg, #14121b 0%, #000000 100%)",
 });
 
 const ContentWrapper = styled(Box)({
-  maxWidth: '960px',
-  width: '100%',
-  margin: '0 auto',
-  padding: '20px',
+  maxWidth: "960px",
+  width: "100%",
+  margin: "0 auto",
+  padding: "20px",
 });
 
 const GradientTitle = styled(Typography)({
-  background: "linear-gradient(180deg, rgb(235, 235, 235) 0%, rgba(235, 235, 235, 0) 100%)",
+  background:
+    "linear-gradient(180deg, rgb(235, 235, 235) 0%, rgba(235, 235, 235, 0) 100%)",
   WebkitBackgroundClip: "text",
   backgroundClip: "text",
   WebkitTextFillColor: "transparent",
@@ -35,12 +36,12 @@ const GradientTitle = styled(Typography)({
   textAlign: "center",
   letterSpacing: "-2.4px",
   lineHeight: "80px",
-  marginTop: '-8px',
-  marginBottom: '16px',
-  '@media (max-width: 600px)': {
-    fontSize: '48px',
-    lineHeight: '48px',
-  }
+  marginTop: "-8px",
+  marginBottom: "16px",
+  "@media (max-width: 600px)": {
+    fontSize: "48px",
+    lineHeight: "48px",
+  },
 });
 
 const Description = styled(Typography)({
@@ -50,13 +51,13 @@ const Description = styled(Typography)({
   fontSize: "18px",
   textAlign: "center",
   lineHeight: "28.8px",
-  maxWidth: '746px',
-  margin: '0 auto',
-  '@media (max-width: 600px)': {
-    fontSize: '16px',
-    lineHeight: '24px',
-    padding: '0 16px',
-  }
+  maxWidth: "746px",
+  margin: "0 auto",
+  "@media (max-width: 600px)": {
+    fontSize: "16px",
+    lineHeight: "24px",
+    padding: "0 16px",
+  },
 });
 
 interface RaffleInfo {
@@ -78,9 +79,10 @@ interface PoolInfo {
 export default function RafflesPage(): JSX.Element {
   const [raffles, setRaffles] = useState<RaffleInfo[]>([]);
   const publicClient = usePublicClient();
-  
-  const stakingAddress = contracts.staking[DefaultChainID as keyof typeof contracts.staking];
-  
+
+  const stakingAddress =
+    contracts.staking[DefaultChainID as keyof typeof contracts.staking];
+
   useEffect(() => {
     document.title = "Raffles";
     if (publicClient && stakingAddress) {
@@ -90,34 +92,36 @@ export default function RafflesPage(): JSX.Element {
 
   const fetchRaffles = async () => {
     try {
-      if (!publicClient || !stakingAddress) return;
-      
-      const currentPoolId = await readContract(publicClient, {
+      if (!publicClient || !stakingAddress) {
+        return;
+      }
+
+      const currentPoolId: bigint = (await readContract(wagmiConfig, {
         address: stakingAddress as `0x${string}`,
         abi: stakingABI,
-        functionName: 'currentPoolId',
-      }) as bigint;
+        functionName: "currentPoolId",
+      })) as bigint;
 
       const rafflesList: RaffleInfo[] = [];
-      
+
       for (let i = 0; i <= Number(currentPoolId); i++) {
-        const poolInfo = await readContract(publicClient, {
+        const poolInfo: PoolInfo = (await readContract(wagmiConfig, {
           address: stakingAddress as `0x${string}`,
           abi: stakingABI,
-          functionName: 'poolInfo',
+          functionName: "poolInfo",
           args: [BigInt(i)],
-        }) as PoolInfo;
+        })) as PoolInfo;
 
         if (poolInfo.active) {
           rafflesList.push({
             id: i,
             lockDuration: Number(poolInfo.lockDuration),
             raffleAt: Number(poolInfo.raffleAt),
-            active: poolInfo.active
+            active: poolInfo.active,
           });
         }
       }
-      
+
       setRaffles(rafflesList);
     } catch (error) {
       console.error("Error fetching raffles:", error);
@@ -134,19 +138,17 @@ export default function RafflesPage(): JSX.Element {
           gap={2}
           position="relative"
         >
-          <GradientTitle variant="h1">
-            Upcoming Raffles
-          </GradientTitle>
+          <GradientTitle variant="h1">Upcoming Raffles</GradientTitle>
 
           <Box
             display="flex"
-            width={{ xs: '100%', md: '746px' }}
+            width={{ xs: "100%", md: "746px" }}
             justifyContent="center"
             position="relative"
           >
             <Description variant="body1">
-              Use the NANA points generated by staking your TRIBE apes to enter our
-              raffles. There are some awesome prizes to be won!
+              Use the NANA points generated by staking your TRIBE apes to enter
+              our raffles. There are some awesome prizes to be won!
             </Description>
           </Box>
 
@@ -156,7 +158,7 @@ export default function RafflesPage(): JSX.Element {
                 <Card
                   sx={{
                     p: 3,
-                    bgcolor: 'rgba(255,255,255,0.05)',
+                    bgcolor: "rgba(255,255,255,0.05)",
                     borderRadius: 2,
                   }}
                 >
@@ -167,7 +169,8 @@ export default function RafflesPage(): JSX.Element {
                     Lock Duration: {raffle.lockDuration} days
                   </Typography>
                   <Typography color="rgba(255,255,255,0.7)">
-                    Raffle Date: {new Date(raffle.raffleAt * 1000).toLocaleDateString()}
+                    Raffle Date:{" "}
+                    {new Date(raffle.raffleAt * 1000).toLocaleDateString()}
                   </Typography>
                 </Card>
               </Grid>
