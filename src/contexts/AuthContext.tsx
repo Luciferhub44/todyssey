@@ -40,7 +40,9 @@ export const initialState: AuthState = {
 
 // Context
 const AuthStateContext = createContext<AuthState>(initialState);
-const AuthDispatchContext = createContext<React.Dispatch<AuthAction>>({} as React.Dispatch<AuthAction>);
+const AuthDispatchContext = createContext<React.Dispatch<AuthAction>>(
+  {} as React.Dispatch<AuthAction>
+);
 
 // Provider Component
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -97,18 +99,18 @@ export async function getUser(
 export async function loginUser(
   dispatch: React.Dispatch<AuthAction>,
   account: string,
-  nonce: string,
-  signer: Signer,
+  // nonce: string,
+  // signer: Signer,
   signature: string
 ) {
   dispatch({ type: "REQUEST_LOGIN" });
-  
+
   try {
     const { data } = await axios.post(
       `/login`,
       Querystring.stringify({ address: account, signature })
     );
-    
+
     if (data.token) {
       window.localStorage.setItem("0xApesToken", data.token);
       dispatch({ type: "LOGIN_SUCCESS", payload: data.token });
@@ -116,9 +118,9 @@ export async function loginUser(
       return data.token;
     }
   } catch (error) {
-    dispatch({ 
-      type: "LOGIN_ERROR", 
-      error: new Error(error instanceof Error ? error.message : "Login failed") 
+    dispatch({
+      type: "LOGIN_ERROR",
+      error: new Error(error instanceof Error ? error.message : "Login failed"),
     });
   }
 }
@@ -129,7 +131,10 @@ export async function logout(dispatch: React.Dispatch<AuthAction>) {
 }
 
 // Reducer
-export const AuthReducer = (state: AuthState, action: AuthAction): AuthState => {
+export const AuthReducer = (
+  state: AuthState,
+  action: AuthAction
+): AuthState => {
   switch (action.type) {
     case "FETCH_USER_SUCCESS":
       return {

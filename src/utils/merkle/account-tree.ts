@@ -1,5 +1,5 @@
-import MerkleTree from "./merkle-tree";
-import { utils } from "ethers";
+import { ethers } from "ethers";
+import MerkleTree from "./markle-tree";
 
 export default class AccountTree {
   private readonly tree: MerkleTree;
@@ -26,8 +26,9 @@ export default class AccountTree {
 
   // keccak256(abi.encode(account))
   public static toNode(account: string): Buffer {
+    // W v6 funkcje narzędziowe są częścią obiektu ethers bezpośrednio
     return Buffer.from(
-      utils.solidityKeccak256(["address"], [account]).substr(2),
+      ethers.keccak256(ethers.encodeAbi(["address"], [account])).substr(2),
       "hex"
     );
   }
@@ -41,3 +42,5 @@ export default class AccountTree {
     return this.tree.getHexProof(AccountTree.toNode(account));
   }
 }
+
+

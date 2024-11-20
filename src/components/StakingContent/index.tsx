@@ -1,7 +1,7 @@
-import { Box, Button, Typography, useTheme, useMediaQuery, Grid, Card } from "@mui/material";
-import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
+import { Box, Button, Typography,  Grid, Card } from "@mui/material";
+import { useAccount, useConnect, useSignMessage } from 'wagmi';
 import { injected } from 'wagmi/connectors';
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -13,11 +13,11 @@ interface NFT {
 }
 
 const StakingContent = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+ // const theme = useTheme();
+ // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { address, isConnected } = useAccount();
   const { connect } = useConnect();
-  const { disconnect } = useDisconnect();
+  //const { disconnect } = useDisconnect();
   const { signMessageAsync } = useSignMessage();
 
   const [activeTab, setActiveTab] = useState(0); // 0: All, 1: Staked
@@ -35,7 +35,9 @@ const StakingContent = () => {
   };
 
   const fetchNFTs = async () => {
-    if (!address) return;
+   if (!address) {
+     return;
+   }
     
     try {
       const response = await axios.get(`/api/nfts/${address}`);
@@ -48,7 +50,9 @@ const StakingContent = () => {
   };
 
   const handleStake = async () => {
-    if (!address || selectedNFTs.length === 0) return;
+    if (!address || selectedNFTs.length === 0) {
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -77,7 +81,9 @@ const StakingContent = () => {
   };
 
   const handleUnstake = async () => {
-    if (!address || selectedNFTs.length === 0) return;
+    if (!address || selectedNFTs.length === 0) {
+      return;
+    }
 
     try {
       setIsLoading(true);

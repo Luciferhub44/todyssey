@@ -1,12 +1,19 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import useRefresh from "./useRefresh";
-import { getSubgraphEndpoint } from "../utils/addressHelpers";
 import { useWeb3React } from "./useWeb3React";
 
+interface Item {
+  contract: string;
+  tokenId: string;
+  is_staked: boolean;
+  // Add other relevant fields here
+  id: string;
+}
+
 const useOwnTribes = (trigger: number) => {
-  const [tribes, setTribes] = useState([]);
-  const [stakedTribes, setStakedTribes] = useState([]);
+  const [tribes, setTribes] = useState<Item[]>([]);
+  const [stakedTribes, setStakedTribes] = useState<Item[]>([]);
   const { slowRefresh } = useRefresh();
   const { account } = useWeb3React();
 
@@ -16,12 +23,11 @@ const useOwnTribes = (trigger: number) => {
         .get("/item", {
           params: {
             owner: account?.toLowerCase(),
-            //contract: "0x77f649385ca963859693c3d3299d36dfc7324eb9",
             limit: 1000,
           },
         })
         .then((response) => {
-          const items = (response?.data?.items || []).map((item) => ({
+          const items: Item[] = (response?.data?.items || []).map((item: any) => ({
             ...item,
             id: `${item.contract}-${item.tokenId}`,
           }));

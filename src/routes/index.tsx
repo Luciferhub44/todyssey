@@ -1,21 +1,20 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import HomePage from '../pages/home';
-import ElementTribe from '../pages/fun';
-import EnsPage from '../pages/ens';
-import AboutPage from '../pages/about';
-import BeatsPage from '../pages/beats';
-import ClaimPage from '../pages/claim';
-import CouncilPage from '../pages/council';
-import FAQPage from '../pages/faq';
-import ProfilePage from '../pages/profile';
-import RafflesPage from '../pages/raffles';
-import RafflesAdminPage from '../pages/rafflesadmin';
-import RaffleOpenPage from '../pages/rafflesopened';
-import StakingPage from '../pages/staking';
-import WallpaperPage from '../pages/wallpaper';
-import WinnersPage from '../pages/winners';
-import CheckerPage from '../pages/checker';
+import { Routes, Route } from "react-router-dom";
+import HomePage from "../pages/home";
+import ElementTribe from "../pages/fun";
+import EnsPage from "../pages/ens";
+import AboutPage from "../pages/about";
+import BeatsPage from "../pages/beats";
+import ClaimPage from "../pages/claim";
+import CouncilPage from "../pages/council";
+import FAQPage from "../pages/faq";
+import ProfilePage from "../pages/profile";
+import RafflesPage from "../pages/raffles";
+import RafflesAdminPage from "../pages/rafflesadmin";
+import RaffleOpenPage from "../pages/rafflesopened";
+import StakingPage from "../pages/staking";
+import WallpaperPage from "../pages/wallpaper";
+import WinnersPage from "../pages/winners";
+import CheckerPage from "../pages/checker";
 
 const AppRoutes = () => {
   return (
@@ -40,4 +39,4 @@ const AppRoutes = () => {
   );
 };
 
-export default AppRoutes; 
+export default AppRoutes;

@@ -1,4 +1,4 @@
-import React, { FC, memo } from "react";
+import { FC, memo } from "react";
 
 interface AboutPageProps {
   className?: string;
@@ -8,9 +8,9 @@ const AboutPage: FC<AboutPageProps> = memo(() => {
   return (
     <div className="flex flex-col items-center gap-[80px]">
       <div className="h-[80px]">
-        <img 
-          className="object-cover h-full" 
-          src="/assets/logo.png" 
+        <img
+          className="object-cover h-full"
+          src="/assets/logo.png"
           alt="Tribe Logo"
         />
       </div>

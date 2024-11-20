@@ -4,8 +4,8 @@ import { getTribeAddress } from "../utils/addressHelpers";
 import { useTokenContract } from "./useContract";
 import { useWeb3React } from "./useWeb3React";
 import { BigNumber } from "ethers";
-
-const useTokenApproval = (token) => {
+type TokenType = string | typeof zeroAddress;
+const useTokenApproval : (token: TokenType) => boolean = (token: TokenType) => {
   const { account } = useWeb3React();
   const nftContractAddress = getTribeAddress();
   const tokenContract = useTokenContract(token);
@@ -21,12 +21,11 @@ const useTokenApproval = (token) => {
     };
 
     if (token == zeroAddress) {
-      setApproved(true);
-    } else {
-      if (token && account) {
-        fetch();
-      }
-    }
+          setApproved(true);
+        }
+    else if (token && account) {
+            fetch();
+          }
   }, [token, account]);
 
   return approved;
