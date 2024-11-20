@@ -22,7 +22,7 @@ const useTokenBalance: TokenBalanceHook = (token: Address) => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        let tempBalance: BigNumber = ethers.utils.BigNumber.from("0");
+        let tempBalance: BigNumber = await .BigNumber.from("0");
         if (token === zeroAddress && signer && account) {
           tempBalance = await signer.getBalance(account);
         } else if (account && tokenContract) {

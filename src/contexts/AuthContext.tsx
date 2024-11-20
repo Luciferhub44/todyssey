@@ -13,9 +13,9 @@ interface User {
   // add other user properties as needed
 }
 
-interface Signer {
-  signMessage: (message: string) => Promise<string>;
-}
+// interface Signer {
+//   signMessage: (message: string) => Promise<string>;
+// }
 
 interface AuthAction {
   type: string;

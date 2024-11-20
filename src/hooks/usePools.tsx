@@ -3,8 +3,17 @@ import { useEffect, useState } from "react";
 import useRefresh from "./useRefresh";
 import { getSubgraphEndpoint } from "../utils/addressHelpers";
 
-const usePools = (trigger: number) => {
-  const [pools, setPools] = useState([]);
+interface Pool {
+  id: number;
+  lockDuration: number;
+  raffleAt: number;
+  totalLocked: number;
+  active: boolean;
+  tokens: string[];
+}
+
+const usePools = (trigger: number): Pool[] => {
+  const [pools, setPools] = useState<Pool[]>([]);
   const { slowRefresh } = useRefresh();
 
   useEffect(() => {
@@ -32,34 +41,31 @@ const usePools = (trigger: number) => {
       `;
 
       const variables = {};
-      axios
-        .post(getSubgraphEndpoint(), { query, variables })
-        .then((response) => {
-          if (response?.data?.data?.pools) {
-            setPools(
-              response?.data?.data?.pools
-                .map((p) => {
-                  const stakedTokenIds = [
-                    ...p.tokens1,
-                    ...p.tokens2,
-                    ...p.tokens3,
-                  ].map((o) => o.id);
-                  return {
-                    id: +p.id,
-                    lockDuration: +p.lockDuration,
-                    raffleAt: +p.raffleAt,
-                    active: p.active,
-                    totalLocked: +p.totalLocked,
-                    tokens: stakedTokenIds,
-                  };
-                })
-                .filter((p) => p.active)
-            );
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      try {
+        const response = await axios.post(getSubgraphEndpoint(), { query, variables });
+        if (response?.data?.data?.pools) {
+          const fetchedPools: Pool[] = response.data.data.pools
+            .map((p: any) => {
+              const stakedTokenIds = [
+                ...p.tokens1,
+                ...p.tokens2,
+                ...p.tokens3,
+              ].map((o: any) => o.id);
+              return {
+                id: +p.id,
+                lockDuration: +p.lockDuration,
+                raffleAt: +p.raffleAt,
+                active: p.active,
+                totalLocked: +p.totalLocked,
+                tokens: stakedTokenIds,
+              };
+            })
+            .filter((p: Pool) => p.active);
+          setPools(fetchedPools);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetch();
