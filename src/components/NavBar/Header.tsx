@@ -1,16 +1,20 @@
 import { Box, Stack, IconButton, useMediaQuery, useTheme } from "@mui/material";
-import { Menu as MenuIcon } from "@mui/icons-material";
-import { Twitter, Telegram, Instagram, Wallet } from "@mui/icons-material";
+import {
+  Menu as MenuIcon,
+  Twitter,
+  Telegram,
+  Instagram,
+  Wallet,
+} from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
-import { DesktopMenu } from "./DesktopMenu";
+import logo from "@/public/images/logo.jpeg";
 import { MobileMenu } from "./MobileMenu";
 import { GradientText } from "./StyledComponents";
-import { Discord } from "../icons/Discord";
+import { Discord } from "@/components/icons/Discord";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-
+import { DesktopMenu } from "./DesktopMenu";
 // Types
 interface NavLink {
   name: string;

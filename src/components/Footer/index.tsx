@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Twitter, Telegram, Instagram } from "@mui/icons-material";
 import { Discord } from "../icons/Discord";
-import logo from "../../assets/images/logo.png";
+import logo from "@/public/logo.jpeg";
 import { Link } from "react-router-dom";
 
 // Styled Components
