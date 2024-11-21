@@ -3,6 +3,7 @@ import MerkleTree from "./markle-tree";
 
 export default class AccountTree {
   private readonly tree: MerkleTree;
+
   constructor(accounts: string[]) {
     this.tree = new MerkleTree(
       accounts.map((account) => {
@@ -26,9 +27,9 @@ export default class AccountTree {
 
   // keccak256(abi.encode(account))
   public static toNode(account: string): Buffer {
-    // W v6 funkcje narzędziowe są częścią obiektu ethers bezpośrednio
+    // In v6, utility functions are directly part of the ethers object
     return Buffer.from(
-      ethers.keccak256(ethers.encodeAbi(["address"], [account])).substr(2),
+      ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(["address"], [account])).substr(2),
       "hex"
     );
   }
@@ -42,5 +43,3 @@ export default class AccountTree {
     return this.tree.getHexProof(AccountTree.toNode(account));
   }
 }
-
-
