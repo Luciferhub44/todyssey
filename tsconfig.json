@@ -26,5 +26,5 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "dist"
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src", "vite-env.d.ts", "src/types/*.d.ts", "public/*", "src/**/*"]
 }

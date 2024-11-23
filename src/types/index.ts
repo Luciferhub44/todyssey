@@ -43,4 +43,22 @@ export interface NavLinkProps {
   name: string;
   path: string;
   external?: boolean;
+}
+
+// Collection Types
+export type CollectionStatus = 'Available' | 'Coming Soon' | 'Sold Out';
+
+export interface CollectionItem {
+  image: string;
+  title: string;
+  description: string;
+  price?: string;
+  releaseDate?: string;
+  status: CollectionStatus;
+}
+
+export interface Element19Collections {
+  comics: CollectionItem[];
+  posters: CollectionItem[];
+  upcoming: CollectionItem[];
 } 

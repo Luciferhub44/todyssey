@@ -9,12 +9,13 @@ import {
 import { styled } from "@mui/system";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "@/public/images/logo.jpeg";
+const logo = "/logored.png"
 import { MobileMenu } from "./MobileMenu";
 import { GradientText } from "./StyledComponents";
-import { Discord } from "@/components/icons/Discord";
+import { Discord } from "../icons/Discord";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DesktopMenu } from "./DesktopMenu";
+import { mainNavLinks } from "../../types/nav";
 // Types
 interface NavLink {
   name: string;
@@ -28,6 +29,10 @@ interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
+  {
+    text: "Navigation",
+    links: mainNavLinks,
+  },
   {
     text: "Assets",
     links: [

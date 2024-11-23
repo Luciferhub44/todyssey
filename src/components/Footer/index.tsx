@@ -5,11 +5,12 @@ import {
   Typography,
   Divider,
   styled,
+  Stack,
 } from "@mui/material";
 import { Twitter, Telegram, Instagram } from "@mui/icons-material";
 import { Discord } from "../icons/Discord";
-import logo from "@/public/logo.jpeg";
 import { Link } from "react-router-dom";
+import { footerLinks } from "../../types/nav";
 
 // Styled Components
 const StyledFooter = styled(Box)({
@@ -68,108 +69,83 @@ const SocialIcon = styled("a")({
   },
 });
 
-// Footer Data with proper routing paths
-const footerLinks = {
-  Assets: [
-    { name: "4K Tribe", path: "/4ktribe" },
-    { name: "Wallpapers", path: "/wallpaper" },
-    { name: "ENS", path: "/ens" },
-    { name: "Tribal Beats", path: "/beats" },
-    { name: "Tribe 19 Checker", path: "/checker" },
-  ],
-  Marketplace: [
-    { name: "Marketplace", path: "/marketplace" },
-    { name: "Opensea", path: "https://opensea.io/tribe" },
-    { name: "Looksrare", path: "https://looksrare.org/tribe" },
-    { name: "X2Y2", path: "https://x2y2.io/tribe" },
-  ],
-  Staking: [
-    { name: "Stake Apes", path: "/staking" },
-    { name: "Raffles", path: "/raffles" },
-    { name: "Winners", path: "/winners" },
-  ],
-  "The Council": [{ name: "Council", path: "/council" }],
-};
-
-const socialLinks = [
-  { Icon: Twitter, href: "#twitter" },
-  { Icon: Telegram, href: "#telegram" },
-  { Icon: Discord, href: "#discord" },
-  { Icon: Instagram, href: "#instagram" },
-];
-
 export const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <StyledFooter>
+    <Box
+      component="footer"
+      sx={{
+        bgcolor: '#14121b',
+        color: 'white',
+        py: 6,
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+      }}
+    >
       <Container maxWidth="lg">
-        <Grid container spacing={5}>
-          <Grid item xs={12} md={3}>
-            <Logo src={logo} alt="Tribe Logo" />
+        <Grid container spacing={4}>
+          {/* Navigation Links */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Montserrat' }}>
+              Navigation
+            </Typography>
+            <Stack spacing={2}>
+              {footerLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Typography
+                    sx={{
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      '&:hover': {
+                        color: '#ff0008',
+                      },
+                      fontFamily: 'Montserrat',
+                    }}
+                  >
+                    {link.name}
+                  </Typography>
+                </Link>
+              ))}
+            </Stack>
           </Grid>
 
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <Grid item xs={6} md={2} key={title}>
-              <GradientTypography variant="h6">{title}</GradientTypography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                {links.map((link) =>
-                  link.path.startsWith("http") ? (
-                    <FooterLink
-                      key={link.name}
-                      component="a"
-                      href={link.path}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {link.name}
-                    </FooterLink>
-                  ) : (
-                    <FooterLink key={link.name} component={Link} to={link.path}>
-                      {link.name}
-                    </FooterLink>
-                  )
-                )}
-              </Box>
-            </Grid>
-          ))}
+          {/* Social Links */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Montserrat' }}>
+              Connect With Us
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <SocialIcon href="https://twitter.com" target="_blank">
+                <Twitter />
+              </SocialIcon>
+              <SocialIcon href="https://telegram.org" target="_blank">
+                <Telegram />
+              </SocialIcon>
+              <SocialIcon href="https://discord.com" target="_blank">
+                <Discord />
+              </SocialIcon>
+              <SocialIcon href="https://instagram.com" target="_blank">
+                <Instagram />
+              </SocialIcon>
+            </Stack>
+          </Grid>
         </Grid>
 
         <StyledDivider />
 
-        <Box
+        <Typography
+          variant="body2"
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 2,
+            color: 'rgba(255, 255, 255, 0.5)',
+            textAlign: 'center',
+            fontFamily: 'Montserrat',
           }}
         >
-          <Typography
-            sx={{
-              fontFamily: "Inter-Regular, Helvetica",
-              color: "rgba(255, 255, 255, 0.8)",
-            }}
-          >
-            © {currentYear} TRIBE. All rights reserved.
-          </Typography>
-
-          <Box sx={{ display: "flex", gap: 3 }}>
-            {socialLinks.map(({ Icon, href }) => (
-              <SocialIcon
-                key={href}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon />
-              </SocialIcon>
-            ))}
-          </Box>
-        </Box>
+          © {new Date().getFullYear()} Tribe Odyssey. All rights reserved.
+        </Typography>
       </Container>
-    </StyledFooter>
+    </Box>
   );
 };
 
