@@ -4,7 +4,7 @@ import { styled } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 import { NAV_ITEMS } from "./Header";
 import { GradientText } from "./StyledComponents";
-import { NavLink } from "../../types/nav";
+import { NavItem, NavLink } from "../../types/nav";
 
 // Styled components with improved styling
 const StyledNavItem = styled(Box)(({ theme }) => ({
@@ -94,12 +94,18 @@ export const DesktopMenu = ({
 }: DesktopMenuProps) => {
   const navigate = useNavigate();
 
-  const handleMenuItemClick = (link: NavLink, index: number) => {
+  const handleNavigate = (to: string) => {
+    if (to) {
+      navigate(to);
+    }
+  };
+
+  const handleMenuItemClick = (link: NavItem, index: number) => {
     onNavMenuClose(index);
     if (link.external) {
       window.open(link.path, "_blank", "noopener,noreferrer");
-    } else {
-      navigate(link.path);
+    } else if (link.path) {
+      handleNavigate(link.path);
     }
   };
 
@@ -150,7 +156,7 @@ export const DesktopMenu = ({
             {item.links.map((link) => (
               <MenuItem
                 key={link.name}
-                onClick={() => handleMenuItemClick(link, index)}
+                onClick={() => handleMenuItemClick(link as NavItem, index)}
               >
                 <GradientText>
                   {link.name}

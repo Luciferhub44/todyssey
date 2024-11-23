@@ -3,7 +3,7 @@ import { usePublicClient, useWalletClient } from "wagmi";
 import { FallbackProvider, JsonRpcProvider } from "ethers";
 import { HttpTransport } from "viem";
 
-// Definiowanie typów Chain i Transport
+// Define types
 interface Chain {
   id: number;
   name: string;
@@ -16,9 +16,7 @@ interface Chain {
 
 interface Transport {
   type: string;
-  url: string;
-  transports?: Array<{ value: { url: string } }>;
-  value?: { url: string };
+  transports?: HttpTransport[];
 }
 
 interface PublicClient {
@@ -29,8 +27,13 @@ interface PublicClient {
 interface WalletClient {
   account: { address: string };
   chain: Chain;
-  transport: any; // Możesz zdefiniować bardziej szczegółowy typ
+  transport: HttpTransport;
 }
+
+// Helper function to safely get URL from transport
+const getUrl = (transport: HttpTransport): string => {
+  return (transport as any).url || '';
+};
 
 export function publicClientToProvider(publicClient: PublicClient) {
   const { chain, transport } = publicClient;
@@ -40,24 +43,24 @@ export function publicClientToProvider(publicClient: PublicClient) {
     name: chain.name,
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
-  if (transport.type === "fallback") {
+
+  if (transport.type === "fallback" && transport.transports) {
     return new FallbackProvider(
-      (transport.transports as unknown as HttpTransport[]).map(
-        (transport) => new JsonRpcProvider(transport.url, network)
+      transport.transports.map(
+        (transport) => new JsonRpcProvider(getUrl(transport), network)
       )
     );
   }
 
-  return new JsonRpcProvider(transport.url, network);
+  return new JsonRpcProvider(getUrl(transport as unknown as HttpTransport), network);
 }
 
 /** Hook to convert a viem Public Client to an ethers.js Provider. */
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   const publicClient = usePublicClient({ chainId }) as unknown as PublicClient;
 
-  // Sprawdzenie, czy publicClient jest prawidłowy
   if (!publicClient || !publicClient.chain || !publicClient.transport) {
-    return undefined; // lub możesz zwrócić domyślny provider
+    return undefined;
   }
 
   return React.useMemo(
@@ -79,7 +82,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
 
-  const provider = new JsonRpcProvider(transport.url, network); // Upewnij się, że transport ma url
+  const provider = new JsonRpcProvider(getUrl(transport), network);
   return provider.getSigner(account.address);
 }
 
@@ -88,7 +91,7 @@ export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   const { data: walletClient } = useWalletClient({ chainId });
 
   return React.useMemo(
-    () => (walletClient ? walletClientToSigner(walletClient) : undefined),
+    () => (walletClient ? walletClientToSigner(walletClient as unknown as WalletClient) : undefined),
     [walletClient]
   );
 }

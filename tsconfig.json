@@ -7,6 +7,8 @@
     "moduleResolution": "node",
     "jsx": "react-jsx",
     "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
