@@ -1,9 +1,6 @@
 import { useCallback } from "react";
-import {
-  ConnectorNotFoundError,
-  useConnect,
-  useDisconnect,
-} from "wagmi";
+import { useConnect, useDisconnect, type Connector } from "wagmi";
+import { connectorLocalStorageKey } from "./index";
 
 const useAuth = () => {
   const { connectAsync, connectors } = useConnect();
@@ -11,20 +8,18 @@ const useAuth = () => {
 
   const login = useCallback(
     async (connectorId: string) => {
-      const findConnector = connectors.find((c) => c.id === connectorId);
-      if (!findConnector) {
-        throw new Error("WalletConnectorNotFoundError");
+      const connector = connectors.find((c: Connector) => c.id === connectorId);
+      if (!connector) {
+        throw new Error("Connector not found");
       }
       
       try {
-        const result = await connectAsync({ connector: findConnector });
+        const result = await connectAsync({ connector });
+        localStorage.setItem(connectorLocalStorageKey, connectorId);
         return result;
       } catch (error) {
-        if (error instanceof ConnectorNotFoundError) {
-          throw new Error("WalletConnectorNotFoundError");
-        }
         console.error('Connection error:', error);
-        throw new Error("Failed to connect wallet");
+        throw error;
       }
     },
     [connectors, connectAsync]
@@ -33,6 +28,7 @@ const useAuth = () => {
   const logout = useCallback(async () => {
     try {
       await disconnectAsync();
+      localStorage.removeItem(connectorLocalStorageKey);
     } catch (error) {
       console.error(error);
     }

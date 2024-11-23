@@ -1,16 +1,22 @@
-import { useAccount, useChainId, useWalletClient } from "wagmi";
-import {
-  useConnectModal,
-  useAccountModal,
-  useChainModal,
-} from "@rainbow-me/rainbowkit";
+import { useAccount, useChainId, useWalletClient, useConnect, useDisconnect } from "wagmi";
 import { chains } from "../config/constants";
+import type { Connector } from "wagmi";
 
 export function useWeb3React() {
   const chainId: number | undefined = useChainId();
   const isSupported = chains.some((chain) => chain.id === chainId);
   const { address, connector, isConnected, isConnecting } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  const handleConnect = async (connector: Connector) => {
+    try {
+      await connect({ connector });
+    } catch (error) {
+      console.error('Connection error:', error);
+    }
+  };
 
   return {
     chainId,
@@ -20,17 +26,30 @@ export function useWeb3React() {
     isConnecting,
     connector,
     walletClient,
+    connect: handleConnect,
+    disconnect
   };
 }
 
 export function useWalletConnect() {
-  const { openConnectModal } = useConnectModal();
-  const { openAccountModal } = useAccountModal();
-  const { openChainModal } = useChainModal();
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { address } = useAccount();
+
+  const handleConnect = async () => {
+    const connector = connectors[0];
+    if (connector) {
+      try {
+        await connect({ connector });
+      } catch (error) {
+        console.error('Connection error:', error);
+      }
+    }
+  };
 
   return {
-    openConnectModal,
-    openAccountModal,
-    openChainModal,
+    connect: handleConnect,
+    disconnect,
+    address
   };
 }

@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ErrorBoundary } from "react-error-boundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiConfig } from "wagmi";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -22,7 +21,6 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ErrorBoundary fallback={<div>An error occurred</div>}>
       <WagmiConfig config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
@@ -31,6 +29,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           </AuthProvider>
         </QueryClientProvider>
       </WagmiConfig>
-    </ErrorBoundary>
   </React.StrictMode>
 );

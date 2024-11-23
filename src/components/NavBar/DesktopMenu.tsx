@@ -1,7 +1,7 @@
 import { Box, Stack, Menu, MenuItem } from "@mui/material";
 import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
 import { styled } from "@mui/system";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { NAV_ITEMS } from "./Header";
 import { GradientText } from "./StyledComponents";
 import { NavItem, NavLink } from "../../types/nav";
@@ -109,6 +109,10 @@ export const DesktopMenu = ({
     }
   };
 
+  const handleNavMenuOpen = (event: React.MouseEvent<HTMLElement>, index: number) => {
+    onNavMenuOpen(event, index);
+  };
+
   return (
     <Stack
       direction="row"
@@ -123,7 +127,7 @@ export const DesktopMenu = ({
       {NAV_ITEMS.map((item, index) => (
         <Box key={item.text}>
           <StyledNavItem
-            onClick={(e) => onNavMenuOpen(e, index)}
+            onClick={(e) => handleNavMenuOpen(e, index)}
             role="button"
             aria-haspopup="true"
             aria-expanded={Boolean(navMenuAnchors[index])}

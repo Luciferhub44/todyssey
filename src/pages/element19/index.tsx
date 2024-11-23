@@ -8,10 +8,10 @@ import {
   CardContent,
   CardMedia,
   Button,
-  styled,
   Chip,
   type GridProps,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { CollectionItem as ICollectionItem, Element19Collections } from "../../types";

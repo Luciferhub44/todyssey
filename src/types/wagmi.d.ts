@@ -1,4 +1,13 @@
 declare module 'wagmi' {
+  export { useConnect, useAccount, useDisconnect, useChainId, useWalletClient } from '@wagmi/core';
+  export { WagmiConfig } from '@wagmi/core/react';
+  export { createConfig, http } from '@wagmi/core';
+  
+  export interface Connector {
+    id: string;
+    // Add other connector properties
+  }
+
   export interface Config {
     chains?: any[];
     transports?: Record<number, any>;

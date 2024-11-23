@@ -1,4 +1,5 @@
-import { Box, Stack, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Stack, IconButton, useMediaQuery } from "@mui/material";
+import { Theme } from "@mui/material/styles";
 import {
   Menu as MenuIcon,
   Twitter,
@@ -6,14 +7,14 @@ import {
   Instagram,
   Wallet,
 } from "@mui/icons-material";
-import { styled } from "@mui/system";
+import { styled, useTheme } from "@mui/material/styles";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router";
+import { useConnect, useAccount, useDisconnect } from 'wagmi';
 const logo = "/logored.png"
 import { MobileMenu } from "./MobileMenu";
 import { GradientText } from "./StyledComponents";
 import { Discord } from "../icons/Discord";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DesktopMenu } from "./DesktopMenu";
 import { mainNavLinks } from "../../types/nav";
 // Types
@@ -105,14 +106,14 @@ const HeaderWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-const LogoImage = styled("img")(({ theme }) => ({
+const LogoImage = styled("img")<{ theme?: Theme }>(({ theme }) => ({
   height: 32,
   width: "auto",
   cursor: "pointer",
-  marginRight: theme.spacing(4),
-  [theme.breakpoints.down("sm")]: {
+  marginRight: theme?.spacing?.(4) || '32px',
+  [`${theme?.breakpoints?.down('sm')}`]: {
     height: 24,
-    marginRight: theme.spacing(2),
+    marginRight: theme?.spacing?.(2) || '16px',
   },
 }));
 
@@ -193,16 +194,17 @@ const ConnectWalletButton = styled(Box)(() => ({
 }));
 
 export const Header = (): JSX.Element => {
-  const theme = useTheme();
-  const navigate = useNavigate();
+  const theme = useTheme<Theme>();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
-    null
-  );
+  const { connect, connectors } = useConnect();
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(null);
   const [navMenuAnchors, setNavMenuAnchors] = useState<(HTMLElement | null)[]>(
     new Array(NAV_ITEMS.length).fill(null)
   );
-  const location = useLocation();
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMenuAnchor(event.currentTarget);
@@ -231,9 +233,16 @@ export const Header = (): JSX.Element => {
     window.open(url, "_blank");
   };
 
-  // const handleConnectWallet = () => {
-  //   console.log("Connecting wallet...");
-  // };
+  const handleConnect = async () => {
+    const connector = connectors[0]; // Usually injected connector (MetaMask)
+    if (connector) {
+      await connect({ connector });
+    }
+  };
+
+  const handleDisconnect = async () => {
+    await disconnect();
+  };
 
   return (
     <HeaderWrapper>
@@ -269,87 +278,30 @@ export const Header = (): JSX.Element => {
           ))}
         </SocialStack>
 
-        {location.pathname === "/ens" ? (
-          <ConnectButton.Custom>
-            {({
-              account,
-              chain,
-              openAccountModal,
-              openChainModal,
-              openConnectModal,
-              mounted,
-            }) => {
-              const ready = mounted;
-              const connected = ready && account && chain;
-
-              return (
-                <Box
-                  {...(!ready && {
-                    "aria-hidden": true,
-                    style: {
-                      opacity: 0,
-                      pointerEvents: "none",
-                      userSelect: "none",
-                    },
-                  })}
-                >
-                  {(() => {
-                    if (!connected) {
-                      return (
-                        <ConnectWalletButton onClick={openConnectModal}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <Wallet sx={{ fontSize: 20 }} />
-                            <GradientText>Connect Wallet</GradientText>
-                          </Box>
-                        </ConnectWalletButton>
-                      );
-                    }
-
-                    return (
-                      <Box sx={{ display: "flex", gap: 1 }}>
-                        <ConnectWalletButton onClick={openChainModal}>
-                          <GradientText>
-                            {chain.hasIcon && (
-                              <Box
-                                component="img"
-                                alt={chain.name ?? "Chain icon"}
-                                src={chain.iconUrl}
-                                sx={{ width: 20, height: 20, mr: 1 }}
-                              />
-                            )}
-                            {chain.name}
-                          </GradientText>
-                        </ConnectWalletButton>
-                        <ConnectWalletButton onClick={openAccountModal}>
-                          <GradientText>
-                            {account.displayName}
-                            {account.displayBalance
-                              ? ` (${account.displayBalance})`
-                              : ""}
-                          </GradientText>
-                        </ConnectWalletButton>
-                      </Box>
-                    );
-                  })()}
-                </Box>
-              );
+        {location.pathname === "/ens" && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              ml: "auto",
             }}
-          </ConnectButton.Custom>
-        ) : (
-          <DiscordButton
-            onClick={() => handleSocialClick("https://discord.gg/tribeodyssey")}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Discord sx={{ fontSize: 20 }} />
-              <GradientText>Join Discord</GradientText>
-            </Box>
-          </DiscordButton>
+            {!isConnected ? (
+              <ConnectWalletButton onClick={handleConnect}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Wallet sx={{ fontSize: 20 }} />
+                  <GradientText>Connect Wallet</GradientText>
+                </Box>
+              </ConnectWalletButton>
+            ) : (
+              <ConnectWalletButton onClick={handleDisconnect}>
+                <GradientText>
+                  {address?.slice(0, 6)}...{address?.slice(-4)}
+                </GradientText>
+              </ConnectWalletButton>
+            )}
+          </Box>
         )}
 
         {isMobile && (
