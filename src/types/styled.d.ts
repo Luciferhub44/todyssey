@@ -1,13 +1,10 @@
-import { Theme as MuiTheme, ThemeOptions as MuiThemeOptions, ThemeOptions } from '@mui/material/styles';
-import { extend } from 'lodash';
+import { Theme as MuiTheme, ThemeOptions as MuiThemeOptions } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface CustomThemeExtension {
     // Add any custom theme properties here
   }
-  interface CustomTheme extends MuiTheme {
-    // Your custom theme properties
-  }
-  interface Theme extends MuiTheme, CustomTheme, CustomThemeExtension {}
+  
+  interface Theme extends MuiTheme, CustomThemeExtension {}
   interface ThemeOptions extends MuiThemeOptions, CustomThemeExtension {}
 } 

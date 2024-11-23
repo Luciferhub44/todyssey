@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { Box, Container, Typography, styled, Grid, Card } from "@mui/material";
-import { usePublicClient } from "wagmi";
+import { Box, Container, Typography, styled, Card } from "@mui/material";
+import { Grid as MuiGrid, type GridProps } from "@mui/material";
+import { getPublicClient } from "wagmi/actions";
 import { readContract } from "wagmi/actions";
 import stakingABI from "../../config/abi/staking.json";
 import contracts from "../../config/constants/contracts";
 import { DefaultChainID } from "../../config/constants";
 import type { FC } from 'react';
-import wagmiConfig from '../../config/wagmi';
+import { wagmiConfig } from '../../config/wagmi';
+
+// Create a typed Grid component
+const Grid = MuiGrid as React.ComponentType<GridProps>;
 
 // Styled Components
 const StyledContainer = styled(Container)({
@@ -80,7 +84,7 @@ interface PoolInfo {
 
 const RafflesPage: FC = () => {
   const [raffles, setRaffles] = useState<RaffleInfo[]>([]);
-  const publicClient = usePublicClient();
+  const publicClient = getPublicClient(wagmiConfig);
 
   const stakingAddress =
     contracts.staking[DefaultChainID as keyof typeof contracts.staking];
@@ -154,9 +158,9 @@ const RafflesPage: FC = () => {
             </Description>
           </Box>
 
-          <Grid container spacing={3}>
+          <Grid container spacing={3} component="div">
             {raffles.map((raffle) => (
-              <Grid item xs={12} sm={6} md={4} key={raffle.id}>
+              <Grid item xs={12} sm={6} md={4} key={raffle.id} component="div">
                 <Card
                   sx={{
                     p: 3,

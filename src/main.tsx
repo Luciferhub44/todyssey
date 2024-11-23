@@ -1,24 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { ErrorBoundary } from "react-error-boundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider, createConfig, http } from "wagmi";
-import { mainnet, goerli } from "wagmi/chains";
+import { WagmiConfig } from "wagmi";
 import { AuthProvider } from "./contexts/AuthContext";
+import { wagmiConfig } from "./config/wagmi";
 import App from "./App";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.scss";
-import "@rainbow-me/rainbowkit/styles.css";
-
-// Create wagmi config
-export const wagmiConfig = createConfig({
-  chains: [mainnet, goerli],
-  transports: {
-    [mainnet.id]: http(),
-    [goerli.id]: http(),
-  },
-});
 
 // Create query client
 const queryClient = new QueryClient({
@@ -32,15 +22,15 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+    <ErrorBoundary fallback={<div>An error occurred</div>}>
+      <WagmiConfig config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <App />
             <ToastContainer position="bottom-right" />
           </AuthProvider>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+        </QueryClientProvider>
+      </WagmiConfig>
+    </ErrorBoundary>
   </React.StrictMode>
 );

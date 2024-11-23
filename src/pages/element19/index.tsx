@@ -3,17 +3,21 @@ import {
   Box,
   Container,
   Typography,
-  Grid,
+  Grid as MuiGrid,
   Card,
   CardContent,
   CardMedia,
   Button,
   styled,
   Chip,
+  type GridProps,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { CollectionItem as ICollectionItem, Element19Collections } from "../../types";
+
+// Create a typed Grid component
+const Grid = MuiGrid as React.ComponentType<GridProps>;
 
 // Styled Components
 const StyledContainer = styled(Container)({
@@ -238,9 +242,9 @@ const Element19Page = () => {
           >
             Comics
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} component="div">
             {collections.comics.map((item: ICollectionItem, index: number) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Grid item xs={12} sm={6} md={4} key={index} component="div">
                 <CollectionItem {...item} />
               </Grid>
             ))}

@@ -1,7 +1,9 @@
 import * as React from "react";
-import { usePublicClient, useWalletClient } from "wagmi";
-import { FallbackProvider, JsonRpcProvider } from "ethers";
+import { getPublicClient, getWalletClient } from "wagmi/actions";
+import { BrowserProvider, JsonRpcProvider, type Signer } from "ethers";
 import { HttpTransport } from "viem";
+import type { Config } from "wagmi";
+import { wagmiConfig } from '../config/wagmi';
 
 // Define types
 interface Chain {
@@ -30,9 +32,18 @@ interface WalletClient {
   transport: HttpTransport;
 }
 
+interface ProviderConfig {
+  chainId?: number;
+  config?: Config;
+}
+
+type SupportedChainId = 1 | 5; // mainnet and goerli
+
 // Helper function to safely get URL from transport
 const getUrl = (transport: HttpTransport): string => {
-  return (transport as any).url || '';
+  if ('url' in transport && transport.url) return transport.url;
+  if ('value' in transport && transport.value?.url) return transport.value.url;
+  return '';
 };
 
 export function publicClientToProvider(publicClient: PublicClient) {
@@ -45,19 +56,18 @@ export function publicClientToProvider(publicClient: PublicClient) {
   };
 
   if (transport.type === "fallback" && transport.transports) {
-    return new FallbackProvider(
-      transport.transports.map(
-        (transport) => new JsonRpcProvider(getUrl(transport), network)
-      )
+    const providerList = transport.transports.map(
+      (t) => new JsonRpcProvider(getUrl(t), network)
     );
+    return providerList[0]; // Use first provider as fallback
   }
 
   return new JsonRpcProvider(getUrl(transport as unknown as HttpTransport), network);
 }
 
 /** Hook to convert a viem Public Client to an ethers.js Provider. */
-export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
-  const publicClient = usePublicClient({ chainId }) as unknown as PublicClient;
+export function useEthersProvider({ chainId }: { chainId?: SupportedChainId } = {}) {
+  const publicClient = getPublicClient(wagmiConfig, { chainId }) as unknown as PublicClient;
 
   if (!publicClient || !publicClient.chain || !publicClient.transport) {
     return undefined;
@@ -69,29 +79,22 @@ export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   );
 }
 
-export function walletClientToSigner(walletClient: WalletClient) {
+export async function walletClientToSigner(walletClient: WalletClient): Promise<Signer | null> {
   if (!walletClient) {
     return null;
   }
 
   const { account, chain, transport } = walletClient;
-
-  const network = {
-    chainId: chain.id,
-    name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address,
-  };
-
-  const provider = new JsonRpcProvider(getUrl(transport), network);
+  const provider = new BrowserProvider(transport as any);
   return provider.getSigner(account.address);
 }
 
 /** Hook to convert a viem Wallet Client to an ethers.js Signer. */
-export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
-  const { data: walletClient } = useWalletClient({ chainId });
+export function useEthersSigner({ chainId }: { chainId?: SupportedChainId } = {}) {
+  const walletClient = getWalletClient(wagmiConfig, { chainId });
 
   return React.useMemo(
-    () => (walletClient ? walletClientToSigner(walletClient as unknown as WalletClient) : undefined),
+    () => walletClient ? walletClientToSigner(walletClient as unknown as WalletClient) : undefined,
     [walletClient]
   );
 }

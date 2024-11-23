@@ -1,13 +1,12 @@
-import { createConfig, http } from 'wagmi';
-import { mainnet, goerli } from 'wagmi/chains';
-import { DefaultChainID } from './constants';
+import { createConfig, http } from '@wagmi/core';
+import { mainnet, goerli } from '@wagmi/core/chains';
 
-const config = createConfig({
-  chains: [DefaultChainID === 1 ? mainnet : goerli],
+export const wagmiConfig = createConfig({
+  chains: [mainnet, goerli],
   transports: {
     [mainnet.id]: http(),
     [goerli.id]: http(),
   },
 });
 
-export default config; 
+export default wagmiConfig;
