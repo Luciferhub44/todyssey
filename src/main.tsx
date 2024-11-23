@@ -21,13 +21,24 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-      <WagmiConfig config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <App />
-            <ToastContainer position="bottom-right" />
-          </AuthProvider>
-        </QueryClientProvider>
-      </WagmiConfig>
+    <WagmiConfig config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <App />
+          <ToastContainer 
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        </AuthProvider>
+      </QueryClientProvider>
+    </WagmiConfig>
   </React.StrictMode>
 );
