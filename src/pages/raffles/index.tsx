@@ -4,8 +4,10 @@ import { usePublicClient } from "wagmi";
 import { readContract } from "wagmi/actions";
 import stakingABI from "../../config/abi/staking.json";
 import contracts from "../../config/constants/contracts";
-import   wagmiConfig  from "../home/index";
 import { DefaultChainID } from "../../config/constants";
+import type { FC } from 'react';
+import wagmiConfig from '../../config/wagmi';
+
 // Styled Components
 const StyledContainer = styled(Container)({
   display: "flex",
@@ -76,7 +78,7 @@ interface PoolInfo {
   winners: bigint[];
 }
 
-export default function RafflesPage(): JSX.Element {
+const RafflesPage: FC = () => {
   const [raffles, setRaffles] = useState<RaffleInfo[]>([]);
   const publicClient = usePublicClient();
 
@@ -181,3 +183,5 @@ export default function RafflesPage(): JSX.Element {
     </StyledContainer>
   );
 }
+
+export default RafflesPage

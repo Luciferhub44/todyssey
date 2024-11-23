@@ -1,56 +1,35 @@
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
-import { zeroAddress } from "../config/constants";
-import { getBigNumber } from "../utils/helper";
-import { useTokenContract } from "./useContract";
-import { useWeb3React } from "./useWeb3React";
 import { Contract } from 'ethers'
+import { useAccount, useWalletClient } from 'wagmi'
+import { useState, useEffect } from 'react'
+import ERC20_ABI from '../config/abi/erc20.json'
 
-type Address = string;
-
-interface TokenBalanceHook {
-  (token: Address): BigInt;
-}
-
-const useTokenBalance: TokenBalanceHook = (token: Address) => {
-  const { account, signer } = useWeb3React();
-  const tokenContract = useTokenContract(token);
-
-  const [balance, setBalance] = useState<BigInt>(getBigNumber("0"));
-
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        let tempBalance: BigInt = await BigInt("0");
-        if (token === zeroAddress && signer && account) {
-          tempBalance = await signer.getBalance(account);
-        } else if (account && tokenContract) {
-          tempBalance = await tokenContract.balanceOf(account);
-        }
-
-        setBalance(tempBalance);
-      } catch (error) {
-        console.error("Error fetching token balance:", error);
-      }
-    };
-
-    if (token && account) {
-      fetch();
-    }
-  }, [token, account, signer, tokenContract]);
+export function useTokenBalance(tokenAddress: string) {
+  const { address: account } = useAccount()
+  const { data: walletClient } = useWalletClient()
+  
+  const [balance, setBalance] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const getBalance = async () => {
+    if (!walletClient || !account || !tokenAddress) return null
+    
     try {
-      if (!tokenContract || !account) return null
-      const tokenContract = await tokenContract as Contract
-      return await tokenContract.balanceOf(account)
+      setLoading(true)
+      const provider = walletClient.transport.provider
+      const contract = new Contract(tokenAddress, ERC20_ABI, provider)
+      const result = await contract.balanceOf(account)
+      setBalance(result.toString())
     } catch (error) {
       console.error('Error getting balance:', error)
-      return null
+      setBalance(null)
+    } finally {
+      setLoading(false)
     }
   }
 
-  return balance;
-};
+  useEffect(() => {
+    getBalance()
+  }, [account, tokenAddress, walletClient])
 
-export default useTokenBalance;
+  return { balance, loading, refetch: getBalance }
+}

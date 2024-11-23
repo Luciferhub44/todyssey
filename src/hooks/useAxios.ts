@@ -3,7 +3,7 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 
 export const useAxios = () => {
   useEffect(() => {
-    if (!import.meta.env.VITE_API_URL) {
+    if (!import.meta.env.VITE_APP_API_URL) {
       console.warn('API_URL not configured');
     }
 

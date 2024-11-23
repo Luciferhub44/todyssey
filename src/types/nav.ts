@@ -4,6 +4,13 @@ export interface NavItem {
   external?: boolean;
 }
 
+export interface NavLink {
+  label: string
+  href: string
+  path?: string
+  external?: boolean  
+}
+
 export const mainNavLinks: NavItem[] = [
   { name: 'Home', path: '/' },
   { name: 'Molten', path: '/molten' },
@@ -18,10 +25,4 @@ export const footerLinks: NavItem[] = [
   { name: 'Marketplace', path: '/marketplace' },
   { name: 'Terms', path: '/terms' },
   { name: 'Privacy', path: '/privacy' },
-];
-
-export interface NavLink {
-  label: string
-  href: string
-  // Add other properties as needed
-} 
+]; 
