@@ -14,7 +14,7 @@ import {
   CardContent,
   CircularProgress,
 } from "@mui/material";
-import heroBackground from "../../assets/images/hero-bg.webp";
+import heroBg from '../../assets/images/hero-bg.webp'
 import StarIcon from "@mui/icons-material/Star";
 import { CardBidMain } from "../../components/Card/CardBidMain";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -1625,7 +1625,7 @@ const HomePage = () => {
           position: "relative",
           height: "100vh",
           width: "100%",
-          backgroundImage: `url(${heroBackground})`,
+          backgroundImage: `url(${heroBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           "&::before": {

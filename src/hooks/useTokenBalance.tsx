@@ -4,6 +4,7 @@ import { zeroAddress } from "../config/constants";
 import { getBigNumber } from "../utils/helper";
 import { useTokenContract } from "./useContract";
 import { useWeb3React } from "./useWeb3React";
+import { Contract } from 'ethers'
 
 type Address = string;
 
@@ -37,6 +38,17 @@ const useTokenBalance: TokenBalanceHook = (token: Address) => {
       fetch();
     }
   }, [token, account, signer, tokenContract]);
+
+  const getBalance = async () => {
+    try {
+      if (!tokenContract || !account) return null
+      const tokenContract = await tokenContract as Contract
+      return await tokenContract.balanceOf(account)
+    } catch (error) {
+      console.error('Error getting balance:', error)
+      return null
+    }
+  }
 
   return balance;
 };

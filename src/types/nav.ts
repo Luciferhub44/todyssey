@@ -18,4 +18,10 @@ export const footerLinks: NavItem[] = [
   { name: 'Marketplace', path: '/marketplace' },
   { name: 'Terms', path: '/terms' },
   { name: 'Privacy', path: '/privacy' },
-]; 
+];
+
+export interface NavLink {
+  label: string
+  href: string
+  // Add other properties as needed
+} 
