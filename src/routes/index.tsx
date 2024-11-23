@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Route, Routes as RouterRoutes } from "react-router";
 import HomePage from "../pages/home";
 import ElementTribe from "../pages/fun";
 import EnsPage from "../pages/ens";
@@ -21,7 +21,7 @@ import Element19Page from '../pages/element19';
 
 const AppRoutes = () => {
   return (
-    <Routes>
+    <RouterRoutes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/fun" element={<ElementTribe />} />
@@ -42,7 +42,7 @@ const AppRoutes = () => {
         <Route path="/molten" element={<MoltenPage />} />
         <Route path="/element19" element={<Element19Page />} />
       </Route>
-    </Routes>
+    </RouterRoutes>
   );
 };
 

@@ -4,54 +4,13 @@ import {
   Grid,
   Typography,
   Divider,
-  styled,
   Stack,
 } from "@mui/material";
 import { Twitter, Telegram, Instagram } from "@mui/icons-material";
 import { Discord } from "../icons/Discord";
 import { Link } from "react-router-dom";
 import { footerLinks } from "../../types/nav";
-
-// Styled Components
-const StyledFooter = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  padding: "40px 24px 20px",
-  background: "linear-gradient(180deg, rgba(20,18,27,0) 0%, #14121b 100%)",
-});
-
-const GradientTypography = styled(Typography)({
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.3) 8.85%, rgb(255,255,255) 100%)",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  fontFamily: "Inter-Regular, Helvetica",
-  fontWeight: "normal",
-  fontSize: "1.25rem",
-  lineHeight: "1.5rem",
-  marginBottom: "16px",
-});
-
-const FooterLink = styled(Typography)({
-  color: "rgba(255, 255, 255, 0.8)",
-  fontFamily: "Inter-Regular, Helvetica",
-  fontSize: "1rem",
-  lineHeight: "1.5rem",
-  cursor: "pointer",
-  transition: "color 0.3s ease",
-  "&:hover": {
-    color: "rgba(255, 255, 255, 1)",
-  },
-}) as typeof Typography;
-
-const Logo = styled("img")({
-  width: "83.2px",
-  height: "32px",
-  objectFit: "cover",
-  marginBottom: "24px",
-});
+import { styled } from "@mui/material/styles";
 
 const StyledDivider = styled(Divider)({
   margin: "40px 0",

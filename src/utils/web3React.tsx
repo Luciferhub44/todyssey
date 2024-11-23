@@ -1,9 +1,9 @@
 import * as React from "react";
 import { getPublicClient, getWalletClient } from "wagmi/actions";
-import { BrowserProvider, JsonRpcProvider, type Signer } from "ethers";
+import { BrowserProvider, JsonRpcProvider, Signer } from "ethers";
 import { HttpTransport } from "viem";
-import type { Config } from "wagmi";
 import { wagmiConfig } from '../config/wagmi';
+import { Config } from 'wagmi';
 
 // Define types
 interface Chain {

@@ -1,10 +1,8 @@
 import { useMemo } from "react";
+import { Contract, Interface, BrowserProvider } from "ethers";
 import ERC20_ABI from "../config/abi/erc20.json";
-import getContract from "../utils/contracts";
 import { useWeb3React } from "./useWeb3React";
-import { Contract, ethers } from "ethers";
 
-// returns null on errors
 export async function useContract(
   address: string | undefined,
   ABI: any
@@ -16,9 +14,10 @@ export async function useContract(
       return null;
     }
     try {
-      const provider = new ethers.BrowserProvider(walletClient);
+      const provider = new BrowserProvider(walletClient);
       const signer = await provider.getSigner();
-      return await getContract(address, ABI, signer);
+      const iface = new Interface(ABI);
+      return new Contract(address, iface.format(), signer);
     } catch (error) {
       console.error("Failed to get contract", error);
       return null;
